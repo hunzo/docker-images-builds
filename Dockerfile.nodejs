@@ -1,0 +1,26 @@
+FROM node:latest
+
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils \
+    && apt-get -y install unzip \
+    && apt-get -y install libaio-dev \
+    && apt-get -y install vim \
+    && mkdir -p /opt/data/app
+
+ADD ./oracle-instantclient/ /tmp
+ADD ./install-instantclient.sh /opt/data
+
+WORKDIR /opt/data/app
+
+ENV ORACLE_HOME=/opt/oracle/instantclient
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ORACLE_HOME
+
+ENV OCI_HOME=/opt/oracle/instantclient
+ENV TNS_ADMIN=/opt/oracle/instantclient
+ENV OCI_LIB_DIR=/opt/oracle/instantclient
+ENV OCI_INCLUDE_DIR=/opt/oracle/instantclient/sdk/include
+ENV PATH=$PATH:$ORACLE_HOME
+
+RUN /opt/data/install-instantclient.sh 
+
+ADD ./tnsnames.ora /opt/oracle/instantclient
+
